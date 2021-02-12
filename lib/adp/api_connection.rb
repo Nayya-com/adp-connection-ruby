@@ -9,6 +9,7 @@ require_relative "connection_exception"
 require_relative "api_connection"
 require_relative "client_credential_configuration"
 require_relative "authorization_code_configuration"
+require_relative "user_info_helper"
 require_relative "connection/version"
 
 module Adp
