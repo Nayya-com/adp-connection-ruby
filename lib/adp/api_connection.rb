@@ -114,54 +114,55 @@ module Adp
             return data
         end
 
-        def send_web_request(url, data={}, authorization=nil, content_type=nil, method=nil)
+        def send_web_request(url, data={}, authorization=nil, content_type=nil, method=nil, body=nil)
 
           data ||= {}
           content_type ||= "application/x-www-form-urlencoded"
           method ||= 'POST'
 
-            log = Logger.new(STDOUT)
-            log.level = Logger::DEBUG
-            log.debug("URL: #{url}")
-            log.debug("Client ID: #{data["client_id"]}")
-            log.debug("Client Secret: #{data["client_secret"]}")
-            log.debug("Grant Type: #{data["grant_type"]}")
+          log = Logger.new(STDOUT)
+          log.level = Logger::DEBUG
+          log.debug("URL: #{url}")
+          log.debug("Client ID: #{data["client_id"]}")
+          log.debug("Client Secret: #{data["client_secret"]}")
+          log.debug("Grant Type: #{data["grant_type"]}")
 
-            useragent = "adp-connection-ruby/#{Adp::Connection::VERSION}"
-            uri = URI.parse( url );
-            pem = File.read("#{self.connection_configuration.sslCertPath}");
-            key = File.read(self.connection_configuration.sslKeyPath);
-            http = Net::HTTP.new(uri.host, uri.port);
+          useragent = "adp-connection-ruby/#{Adp::Connection::VERSION}"
+          uri = URI.parse( url );
+          pem = File.read("#{self.connection_configuration.sslCertPath}");
+          key = File.read(self.connection_configuration.sslKeyPath);
+          http = Net::HTTP.new(uri.host, uri.port);
 
-            log.debug("User agent: #{useragent}")
+          log.debug("User agent: #{useragent}")
 
-            if (!self.connection_configuration.sslCertPath.nil?)
-                http.use_ssl = true
-                http.cert = OpenSSL::X509::Certificate.new( pem );
-                http.key = OpenSSL::PKey::RSA.new(key, self.connection_configuration.sslKeyPass);
-                http.verify_mode = OpenSSL::SSL::VERIFY_PEER
-                unless self.connection_configuration.sslCaPath.nil?
-                  http.cert_store = OpenSSL::X509::Store.new
-                  http.cert_store.add_file(self.connection_configuration.sslCaPath)
-                end
-            end
+          if (!self.connection_configuration.sslCertPath.nil?)
+              http.use_ssl = true
+              http.cert = OpenSSL::X509::Certificate.new( pem );
+              http.key = OpenSSL::PKey::RSA.new(key, self.connection_configuration.sslKeyPass);
+              http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+              unless self.connection_configuration.sslCaPath.nil?
+                http.cert_store = OpenSSL::X509::Store.new
+                http.cert_store.add_file(self.connection_configuration.sslCaPath)
+              end
+          end
 
-            if method.eql?('POST')
-              request = Net::HTTP::Post.new(uri.request_uri)
-              request.set_form_data( data );
-            else
-              request = Net::HTTP::Get.new(uri.request_uri)
-            end
+          if method.eql?('POST')
+            request = Net::HTTP::Post.new(uri.request_uri)
+            request.set_form_data( data ) unless body.present?
+            request.body = body if body.present?
+          else
+            request = Net::HTTP::Get.new(uri.request_uri)
+          end
 
-            request.initialize_http_header({"User-Agent" => useragent })
+        request.initialize_http_header({"User-Agent" => useragent })
 
-            request["Content-Type"] = content_type
+        request["Content-Type"] = content_type
 
-            # add credentials if available
-            request["Authorization"] = authorization unless authorization.nil?
+        # add credentials if available
+        request["Authorization"] = authorization unless authorization.nil?
 
-            response = JSON.parse(http.request(request).body)
-        end
+        response = JSON.parse(http.request(request).body)
+      end
     end
   end
 end
