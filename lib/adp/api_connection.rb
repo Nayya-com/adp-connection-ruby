@@ -114,7 +114,7 @@ module Adp
         return data
       end
 
-      def send_web_request(url, data = {}, authorization = nil, content_type = nil, method = nil, body = nil)
+      def send_web_request(url, data = {}, authorization = nil, content_type = nil, method = nil, body = nil, headers = {})
 
         data ||= {}
         content_type ||= "application/x-www-form-urlencoded"
@@ -154,7 +154,10 @@ module Adp
           request = Net::HTTP::Get.new(uri.request_uri)
         end
 
-        request.initialize_http_header({"User-Agent" => useragent})
+        default_headers = { "User-Agent" => useragent }
+        default_headers.merge!(headers)
+
+        request.initialize_http_header(default_headers)
 
         request["Content-Type"] = content_type
 
