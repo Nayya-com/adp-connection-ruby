@@ -114,7 +114,7 @@ module Adp
         return data
       end
 
-      def send_web_request(url, data = {}, authorization = nil, content_type = nil, method = nil, body = nil, headers = {})
+      def send_web_request(url, data = {}, authorization = nil, content_type = nil, method = nil, body = nil, headers = {}, return_headers = false)
 
         data ||= {}
         content_type ||= "application/x-www-form-urlencoded"
@@ -165,6 +165,11 @@ module Adp
         request["Authorization"] = authorization unless authorization.nil?
 
         response = JSON.parse(http.request(request).body)
+        if return_headers
+          [response, http.request(request).each_header.to_h]
+        else
+          response
+        end
       end
     end
   end
