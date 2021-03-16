@@ -69,7 +69,7 @@ module Adp
           end
         end
 
-        log("connection configutration: #{self.connection_configuration.inspect}")
+        log("connection configuration: #{self.connection_configuration.inspect}")
 
         data = {
             "client_id" => self.connection_configuration.clientID,
