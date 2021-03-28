@@ -163,7 +163,6 @@ module Adp
 
         # add credentials if available
         request["Authorization"] = authorization unless authorization.nil?
-
         response = http.request(request)
         correlation_id = response['adp-correlationid']
         parsed_response = JSON.parse(response.body)

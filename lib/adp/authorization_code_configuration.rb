@@ -8,6 +8,7 @@ module Adp
       attr_accessor :authorizationCode
       attr_accessor :baseAuthorizationURL
       attr_accessor :redirectURL
+      attr_accessor :disconnectURL
       attr_accessor :responseType
       attr_accessor :scope
       attr_accessor :state
@@ -20,6 +21,7 @@ module Adp
           self.authorizationCode = config["authorizationCode"]
           self.baseAuthorizationURL = config["baseAuthorizationURL"]
           self.redirectURL = config["redirectURL"]
+          self.disconnectURL = config["disconnectURL"]
           self.responseType = config["responseType"]
           self.scope = config["scope"]
           self.state = config["state"]
